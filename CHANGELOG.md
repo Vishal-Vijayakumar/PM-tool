@@ -1,5 +1,9 @@
 # PM Prep Tool -- Changelog
 
+## Value Prop Chips -- 2026-05-06
+- Added three stone-panel chips below subtitle: "15 Real Scenarios", "5-Dimension Scoring", "Expert Model Answers"
+- Communicates tool depth above the fold so first-time visitors know this is not a ChatGPT wrapper
+
 ## UI Fix -- 2026-05-06
 - Styled "New scenario" link as a Minecraft dirt block button (brown background, white text, blocky shadow, no rounding)
 

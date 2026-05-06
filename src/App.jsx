@@ -222,6 +222,16 @@ export default function App() {
           <p className="text-stone-500 text-sm mt-3">
             Practice product thinking with AI-powered feedback
           </p>
+          <div className="flex gap-3 mt-4 flex-wrap">
+            {['15 Real Scenarios', '5-Dimension Scoring', 'Expert Model Answers'].map((label) => (
+              <span
+                key={label}
+                className="bg-stone-200 border-2 border-stone-400 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-stone-600"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* Category selector */}

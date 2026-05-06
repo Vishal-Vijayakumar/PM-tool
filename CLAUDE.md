@@ -44,10 +44,11 @@ pm-prep-tool/
 3. **Tradeoff Analysis** — Given a product decision with tradeoffs, analyze and recommend
 
 ## Current Status
-**Phase 3 is complete. Minecraft UI, model answers, Vercel deployment ready.**
+**Phase 3 complete + polish pass. Minecraft UI, model answers, value prop chips, Vercel deployment ready.**
 
 ### What's been built
 - Vite + React + Tailwind CSS project with Minecraft-inspired UI (warm parchment tones, blocky panels, Press Start 2P title font, green accent)
+- Value prop chips in header: "15 Real Scenarios", "5-Dimension Scoring", "Expert Model Answers" -- communicates depth above the fold so PMs know this is not a ChatGPT wrapper
 - 15 scenarios across 3 categories in `src/data/scenarios.js`, each with `modelAnswer` and `evaluationHints`:
   - Metrics Definition (5): Instagram, Slack, DoorDash, Spotify, Google Maps
   - Prioritization (5): Notion, Uber Eats, Figma, Duolingo, Stripe
@@ -61,6 +62,7 @@ pm-prep-tool/
 - Footer with LinkedIn link
 
 ### What's working
+- Value prop chips visible on landing view (above the fold credibility signals)
 - All 3 categories active with category-specific evaluation rubrics
 - Selecting a scenario and getting AI feedback end-to-end
 - Evaluation hints from each scenario are appended to the system prompt for more targeted feedback
