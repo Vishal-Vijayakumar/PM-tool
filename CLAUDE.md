@@ -31,6 +31,7 @@ pm-prep-tool/
     main.jsx
   .env                # VITE_NVIDIA_API_KEY=nvapi-xxx
   .gitignore
+  CHANGELOG.md
   CLAUDE.md
 ```
 
