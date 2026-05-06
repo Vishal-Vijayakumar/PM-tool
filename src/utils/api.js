@@ -1,8 +1,11 @@
+import { EVALUATOR_PROMPTS } from '../prompts/evaluator'
+
 const BASE_URL = '/api/nvidia'
 const MODEL = 'meta/llama-3.3-70b-instruct'
 
-export async function getAIFeedback(systemPrompt, scenarioText, userAnswer) {
+export async function getAIFeedback(category, scenarioText, userAnswer) {
   const apiKey = import.meta.env.VITE_NVIDIA_API_KEY
+  const systemPrompt = EVALUATOR_PROMPTS[category]
 
   const response = await fetch(`${BASE_URL}/chat/completions`, {
     method: 'POST',

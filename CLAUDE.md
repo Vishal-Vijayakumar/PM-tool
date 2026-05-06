@@ -40,27 +40,30 @@ pm-prep-tool/
 3. **Tradeoff Analysis** — Given a product decision with tradeoffs, analyze and recommend
 
 ## Current Status
-**Phase 1 MVP is functional.**
+**Phase 2 is complete. All 3 categories are live.**
 
 ### What's been built
 - Vite + React + Tailwind CSS project scaffolded and configured
-- 5 Metrics Definition scenarios hardcoded in `src/data/scenarios.js` (real companies: Instagram, Slack, DoorDash, Spotify, Google Maps)
-- AI evaluation system prompt in `src/prompts/evaluator.js` with a structured output format (score, strengths, areas to improve, model answer, interviewer tip)
-- Nvidia NIM API integration in `src/utils/api.js` using fetch
-- Full single-page UI in `src/App.jsx`: category selector, scenario card, textarea, submit button, feedback display
+- 15 scenarios across 3 categories in `src/data/scenarios.js`:
+  - Metrics Definition (5): Instagram, Slack, DoorDash, Spotify, Google Maps
+  - Prioritization (5): Notion, Uber Eats, Figma, Duolingo, Stripe
+  - Tradeoff Analysis (5): Spotify, LinkedIn, Airbnb, Slack, Reddit
+- Category-specific AI evaluation prompts in `src/prompts/evaluator.js` (one rubric per category)
+- Nvidia NIM API integration in `src/utils/api.js` using fetch, accepts category to select the right evaluator prompt
+- Full single-page UI in `src/App.jsx`: category selector with descriptions, scenario card, textarea, submit button, feedback display
 - Vite dev proxy configured in `vite.config.js` to route `/api/nvidia` to `https://integrate.api.nvidia.com/v1` — this resolves CORS in development
 - Git repo initialized, committed, and pushed to GitHub
 
 ### What's working
+- All 3 categories active with category-specific evaluation rubrics
 - Selecting a scenario and getting AI feedback end-to-end
-- "New scenario" button cycles through the pool randomly
-- Disabled category buttons (Prioritization, Tradeoff Analysis) show "soon" label
+- "New scenario" button cycles through scenarios in the active category
+- Category descriptions shown under the selector buttons
 - Error display if the API call fails
 - `.env` is gitignored; API key is not in the repo
 
 ### What's pending
 - **Vercel deployment** — the Vite proxy only works in dev. Production needs a serverless function (Vercel API route) to proxy the Nvidia NIM request server-side so the API key stays secret and CORS is resolved
-- Adding Prioritization and Tradeoff Analysis categories (Phase 2)
 - Improving feedback quality based on real PM feedback
 
 ### GitHub Repo
@@ -109,17 +112,14 @@ In development, `vite.config.js` proxies `/api/nvidia/*` to `https://integrate.a
 - When in doubt, keep it simple.
 
 ## Current Phase
-Phase 1: MVP — Metrics Definition category only, 5 scenarios, basic AI feedback.
+Phase 2: All 3 categories live — 15 scenarios, category-specific evaluator prompts.
 
 ## Future Phases (not now)
-- Phase 2: Add Prioritization and Tradeoff Analysis categories (15-20 total scenarios)
 - Phase 3: Improve feedback quality based on PM feedback from outreach
 - Phase 4: Add scenario difficulty levels
 - Phase 5: Community submitted scenarios
 
 ## Future Features (do not build yet)
-- Prioritization category with RICE/ICE framework scenarios
-- Tradeoff Analysis category with real product decisions
 - Ability to share a specific scenario + answer via URL
 - Timer mode for interview simulation
 - History of past attempts stored in localStorage (only after deploy)

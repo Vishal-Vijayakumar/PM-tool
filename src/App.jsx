@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { scenarios } from './data/scenarios'
-import { EVALUATOR_SYSTEM_PROMPT } from './prompts/evaluator'
 import { getAIFeedback } from './utils/api'
 
 const CATEGORIES = [
-  { id: 'metrics', label: 'Metrics Definition', active: true },
-  { id: 'prioritization', label: 'Prioritization', active: false },
-  { id: 'tradeoffs', label: 'Tradeoff Analysis', active: false },
+  { id: 'metrics', label: 'Metrics Definition', description: 'Define how you would measure success for a product feature' },
+  { id: 'prioritization', label: 'Prioritization', description: 'Choose what to build next when you cannot do everything' },
+  { id: 'tradeoffs', label: 'Tradeoff Analysis', description: 'Analyze a product decision where every option has a cost' },
 ]
 
 function randomScenario(category) {
@@ -60,7 +59,6 @@ export default function App() {
   const [error, setError] = useState(null)
 
   function handleCategorySelect(cat) {
-    if (!cat.active) return
     setSelectedCategory(cat.id)
     setScenario(randomScenario(cat.id))
     setAnswer('')
@@ -82,7 +80,7 @@ export default function App() {
     setError(null)
     try {
       const result = await getAIFeedback(
-        EVALUATOR_SYSTEM_PROMPT,
+        selectedCategory,
         scenario.scenario,
         answer
       )
@@ -93,6 +91,8 @@ export default function App() {
       setLoading(false)
     }
   }
+
+  const activeCategory = CATEGORIES.find((c) => c.id === selectedCategory)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -106,27 +106,24 @@ export default function App() {
         </div>
 
         {/* Category selector */}
-        <div className="flex gap-2 mb-6">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => handleCategorySelect(cat)}
-              disabled={!cat.active}
-              className={`px-3 py-1.5 rounded text-sm font-medium border transition-none
-                ${
-                  cat.active && selectedCategory === cat.id
-                    ? 'bg-gray-900 text-white border-gray-900'
-                    : cat.active
-                    ? 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-                    : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                }`}
-            >
-              {cat.label}
-              {!cat.active && (
-                <span className="ml-1.5 text-xs text-gray-400">soon</span>
-              )}
-            </button>
-          ))}
+        <div className="mb-6">
+          <div className="flex gap-2">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => handleCategorySelect(cat)}
+                className={`px-3 py-1.5 rounded text-sm font-medium border transition-none
+                  ${
+                    selectedCategory === cat.id
+                      ? 'bg-gray-900 text-white border-gray-900'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                  }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-gray-500 text-sm mt-2">{activeCategory.description}</p>
         </div>
 
         {/* Scenario card */}
@@ -140,7 +137,7 @@ export default function App() {
               New scenario →
             </button>
           </div>
-          <p className="text-gray-700 text-sm leading-relaxed">{scenario.scenario}</p>
+          <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">{scenario.scenario}</p>
         </div>
 
         {/* Answer textarea */}
