@@ -19,6 +19,8 @@ The tool exists as a networking asset — it will be shared with PMs during Link
 ## Project Structure
 ```
 pm-prep-tool/
+  api/
+    feedback.js       # Vercel serverless proxy for Nvidia NIM API
   src/
     components/       # React components
     data/
@@ -26,13 +28,14 @@ pm-prep-tool/
     prompts/
       evaluator.js    # System prompt for AI feedback
     utils/
-      api.js          # Nvidia NIM API call logic
+      api.js          # Nvidia NIM API call logic (dev proxy / prod serverless)
     App.jsx
     main.jsx
-  .env                # VITE_NVIDIA_API_KEY=nvapi-xxx
+  .env                # VITE_NVIDIA_API_KEY=nvapi-xxx (dev only)
   .gitignore
   CHANGELOG.md
   CLAUDE.md
+  vercel.json         # Vercel routing config
 ```
 
 ## Categories
@@ -41,37 +44,42 @@ pm-prep-tool/
 3. **Tradeoff Analysis** — Given a product decision with tradeoffs, analyze and recommend
 
 ## Current Status
-**Phase 2 is complete. All 3 categories are live.**
+**Phase 3 is complete. UI polished, Vercel deployment ready.**
 
 ### What's been built
-- Vite + React + Tailwind CSS project scaffolded and configured
+- Vite + React + Tailwind CSS project with anime-inspired dark UI (slate-950 background, electric red accent)
 - 15 scenarios across 3 categories in `src/data/scenarios.js`:
   - Metrics Definition (5): Instagram, Slack, DoorDash, Spotify, Google Maps
   - Prioritization (5): Notion, Uber Eats, Figma, Duolingo, Stripe
   - Tradeoff Analysis (5): Spotify, LinkedIn, Airbnb, Slack, Reddit
 - Category-specific AI evaluation prompts in `src/prompts/evaluator.js` (one rubric per category)
-- Nvidia NIM API integration in `src/utils/api.js` using fetch, accepts category to select the right evaluator prompt
+- Nvidia NIM API integration in `src/utils/api.js` -- dev uses Vite proxy, production uses Vercel serverless function
+- Vercel serverless proxy at `api/feedback.js` -- forwards requests to Nvidia NIM with server-side API key
+- Structured feedback display: parsed sections with color-coded borders (green for strengths, amber for gaps, red accent for examples), score with color scaling
+- Footer with LinkedIn link
 - Full single-page UI in `src/App.jsx`: category selector with descriptions, scenario card, textarea, submit button, feedback display
-- Vite dev proxy configured in `vite.config.js` to route `/api/nvidia` to `https://integrate.api.nvidia.com/v1` — this resolves CORS in development
-- Git repo initialized, committed, and pushed to GitHub
 
 ### What's working
 - All 3 categories active with category-specific evaluation rubrics
 - Selecting a scenario and getting AI feedback end-to-end
 - "New scenario" button cycles through scenarios in the active category
+- Feedback parsed into styled sections (score, strengths, gaps, example, tip)
 - Category descriptions shown under the selector buttons
 - Error display if the API call fails
 - `.env` is gitignored; API key is not in the repo
+- Vercel serverless proxy ready for deployment (set `NVIDIA_API_KEY` env var in Vercel dashboard)
 
 ### What's pending
-- **Vercel deployment** — the Vite proxy only works in dev. Production needs a serverless function (Vercel API route) to proxy the Nvidia NIM request server-side so the API key stays secret and CORS is resolved
+- **Vercel deployment** -- run `vercel` CLI or connect GitHub repo in Vercel dashboard, set `NVIDIA_API_KEY` environment variable
 - Improving feedback quality based on real PM feedback
 
 ### GitHub Repo
 https://github.com/Vishal-Vijayakumar/PM-tool
 
-### CORS Proxy Note
-In development, `vite.config.js` proxies `/api/nvidia/*` to `https://integrate.api.nvidia.com/v1/*`. In production on Vercel, this proxy does not exist. A serverless function at `api/nvidia.js` (or similar) must be created to forward requests and inject the API key from a Vercel environment variable. Do not deploy without this — the API key would either be exposed or requests would fail.
+### API Proxy Architecture
+- **Development:** `vite.config.js` proxies `/api/nvidia/*` to `https://integrate.api.nvidia.com/v1/*`. API key comes from `.env` (`VITE_NVIDIA_API_KEY`).
+- **Production (Vercel):** `api/feedback.js` serverless function proxies requests. API key comes from Vercel environment variable `NVIDIA_API_KEY` (set in dashboard, not committed).
+- `src/utils/api.js` detects environment via `import.meta.env.DEV` and routes to the correct endpoint.
 
 ## Coding Rules
 - Single file components where possible. No over-engineering.
@@ -113,10 +121,10 @@ In development, `vite.config.js` proxies `/api/nvidia/*` to `https://integrate.a
 - When in doubt, keep it simple.
 
 ## Current Phase
-Phase 2: All 3 categories live — 15 scenarios, category-specific evaluator prompts.
+Phase 3: UI polished, Vercel deployment ready, 15 scenarios across 3 categories.
 
 ## Future Phases (not now)
-- Phase 3: Improve feedback quality based on PM feedback from outreach
+- Phase 4: Improve feedback quality based on PM feedback from outreach
 - Phase 4: Add scenario difficulty levels
 - Phase 5: Community submitted scenarios
 

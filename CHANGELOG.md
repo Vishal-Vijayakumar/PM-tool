@@ -1,5 +1,14 @@
 # PM Prep Tool -- Changelog
 
+## Phase 3 -- 2026-05-06
+- Anime-inspired dark UI (slate-950 background, electric red accent, sharp geometry)
+- Structured feedback display with parsed sections (score with color scaling, strengths/gaps with colored borders, example blockquote, interviewer tip)
+- Vercel serverless proxy (api/feedback.js) for production deployment
+- Environment-aware API routing (Vite proxy in dev, serverless function in prod)
+- Footer with LinkedIn link
+- Updated page title to "PM Interview Prep"
+- README rewritten with project description, categories, and tech stack
+
 ## Phase 2 -- 2026-05-06
 - Added Prioritization category with 5 scenarios (Notion, Uber Eats, Figma, Duolingo, Stripe)
 - Added Tradeoff Analysis category with 5 scenarios (Spotify, LinkedIn, Airbnb, Slack, Reddit)
