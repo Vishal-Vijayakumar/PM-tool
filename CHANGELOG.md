@@ -1,5 +1,10 @@
 # PM Prep Tool -- Changelog
 
+## Scoring Fix -- 2026-05-06
+- Added minimum effort check to all 3 evaluator prompts (gibberish gets 0/10, one-word answers get 1/10, generic answers get 2-3/10)
+- Replaced scoring guidance with explicit calibration scale (0-1 gibberish through 9-10 exceptional/rare)
+- Prevents inflated scores on low-effort or off-topic answers
+
 ## Phase 3 -- 2026-05-06
 - Minecraft-inspired UI (warm parchment tones, blocky panels, Press Start 2P pixel font for title, green accent)
 - All 15 scenarios enriched with expert model answers and scenario-specific evaluation hints

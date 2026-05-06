@@ -52,7 +52,7 @@ pm-prep-tool/
   - Metrics Definition (5): Instagram, Slack, DoorDash, Spotify, Google Maps
   - Prioritization (5): Notion, Uber Eats, Figma, Duolingo, Stripe
   - Tradeoff Analysis (5): Spotify, LinkedIn, Airbnb, Slack, Reddit
-- Category-specific AI evaluation prompts in `src/prompts/evaluator.js` (one rubric per category)
+- Category-specific AI evaluation prompts in `src/prompts/evaluator.js` (one rubric per category, with minimum effort check and scoring calibration floor)
 - Scenario-specific evaluation hints appended to the system prompt at call time in `src/utils/api.js`
 - Nvidia NIM API integration in `src/utils/api.js` -- dev uses Vite proxy, production uses Vercel serverless function
 - Vercel serverless proxy at `api/feedback.js` -- forwards requests to Nvidia NIM with server-side API key, CORS headers set
