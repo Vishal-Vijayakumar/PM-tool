@@ -44,33 +44,36 @@ pm-prep-tool/
 3. **Tradeoff Analysis** — Given a product decision with tradeoffs, analyze and recommend
 
 ## Current Status
-**Phase 3 is complete. UI polished, Vercel deployment ready.**
+**Phase 3 is complete. Minecraft UI, model answers, Vercel deployment ready.**
 
 ### What's been built
-- Vite + React + Tailwind CSS project with anime-inspired dark UI (slate-950 background, electric red accent)
-- 15 scenarios across 3 categories in `src/data/scenarios.js`:
+- Vite + React + Tailwind CSS project with Minecraft-inspired UI (warm parchment tones, blocky panels, Press Start 2P title font, green accent)
+- 15 scenarios across 3 categories in `src/data/scenarios.js`, each with `modelAnswer` and `evaluationHints`:
   - Metrics Definition (5): Instagram, Slack, DoorDash, Spotify, Google Maps
   - Prioritization (5): Notion, Uber Eats, Figma, Duolingo, Stripe
   - Tradeoff Analysis (5): Spotify, LinkedIn, Airbnb, Slack, Reddit
 - Category-specific AI evaluation prompts in `src/prompts/evaluator.js` (one rubric per category)
+- Scenario-specific evaluation hints appended to the system prompt at call time in `src/utils/api.js`
 - Nvidia NIM API integration in `src/utils/api.js` -- dev uses Vite proxy, production uses Vercel serverless function
-- Vercel serverless proxy at `api/feedback.js` -- forwards requests to Nvidia NIM with server-side API key
-- Structured feedback display: parsed sections with color-coded borders (green for strengths, amber for gaps, red accent for examples), score with color scaling
+- Vercel serverless proxy at `api/feedback.js` -- forwards requests to Nvidia NIM with server-side API key, CORS headers set
+- Structured feedback display: parsed sections with color-coded left borders (green for strengths, amber for gaps, blue for examples, stone for tips), score with color scaling
+- "See a strong answer" collapsible section appears after feedback, showing the curated model answer
 - Footer with LinkedIn link
-- Full single-page UI in `src/App.jsx`: category selector with descriptions, scenario card, textarea, submit button, feedback display
 
 ### What's working
 - All 3 categories active with category-specific evaluation rubrics
 - Selecting a scenario and getting AI feedback end-to-end
+- Evaluation hints from each scenario are appended to the system prompt for more targeted feedback
 - "New scenario" button cycles through scenarios in the active category
 - Feedback parsed into styled sections (score, strengths, gaps, example, tip)
+- Model answer toggle appears after feedback is received
 - Category descriptions shown under the selector buttons
 - Error display if the API call fails
 - `.env` is gitignored; API key is not in the repo
 - Vercel serverless proxy ready for deployment (set `NVIDIA_API_KEY` env var in Vercel dashboard)
 
 ### What's pending
-- **Vercel deployment** -- run `vercel` CLI or connect GitHub repo in Vercel dashboard, set `NVIDIA_API_KEY` environment variable
+- **Vercel deployment** -- import repo in Vercel dashboard, add `NVIDIA_API_KEY` env var, deploy
 - Improving feedback quality based on real PM feedback
 
 ### GitHub Repo
@@ -121,11 +124,11 @@ https://github.com/Vishal-Vijayakumar/PM-tool
 - When in doubt, keep it simple.
 
 ## Current Phase
-Phase 3: UI polished, Vercel deployment ready, 15 scenarios across 3 categories.
+Phase 3: Minecraft UI, model answers with evaluation hints, Vercel serverless proxy ready.
 
 ## Future Phases (not now)
 - Phase 4: Improve feedback quality based on PM feedback from outreach
-- Phase 4: Add scenario difficulty levels
+- Phase 5: Add scenario difficulty levels
 - Phase 5: Community submitted scenarios
 
 ## Future Features (do not build yet)

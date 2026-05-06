@@ -9,8 +9,16 @@ function getBaseUrl() {
   return '/api/feedback'
 }
 
-export async function getAIFeedback(category, scenarioText, userAnswer) {
-  const systemPrompt = EVALUATOR_PROMPTS[category]
+function buildSystemPrompt(category, evaluationHints) {
+  let prompt = EVALUATOR_PROMPTS[category]
+  if (evaluationHints && evaluationHints.length > 0) {
+    prompt += `\n\nSCENARIO-SPECIFIC EVALUATION NOTES:\nFor this specific scenario, a strong answer should:\n${evaluationHints.map((h) => `- ${h}`).join('\n')}\nPenalize answers that miss these scenario-specific elements.`
+  }
+  return prompt
+}
+
+export async function getAIFeedback(category, scenarioText, userAnswer, evaluationHints) {
+  const systemPrompt = buildSystemPrompt(category, evaluationHints)
   const url = getBaseUrl()
 
   const messages = [

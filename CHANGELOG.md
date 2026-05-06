@@ -1,13 +1,16 @@
 # PM Prep Tool -- Changelog
 
 ## Phase 3 -- 2026-05-06
-- Anime-inspired dark UI (slate-950 background, electric red accent, sharp geometry)
-- Structured feedback display with parsed sections (score with color scaling, strengths/gaps with colored borders, example blockquote, interviewer tip)
-- Vercel serverless proxy (api/feedback.js) for production deployment
+- Minecraft-inspired UI (warm parchment tones, blocky panels, Press Start 2P pixel font for title, green accent)
+- All 15 scenarios enriched with expert model answers and scenario-specific evaluation hints
+- Evaluation hints appended to AI system prompt for more targeted, scenario-aware feedback
+- "See a strong answer" collapsible section after feedback, showing curated expert answer
+- Structured feedback display with parsed sections (score with color scaling, strengths/gaps/example/tip with colored left borders)
+- Vercel serverless proxy (api/feedback.js) with CORS headers for production deployment
 - Environment-aware API routing (Vite proxy in dev, serverless function in prod)
 - Footer with LinkedIn link
-- Updated page title to "PM Interview Prep"
-- README rewritten with project description, categories, and tech stack
+- Press Start 2P Google Font loaded via index.html
+- README rewritten with project description, features, categories, and tech stack
 
 ## Phase 2 -- 2026-05-06
 - Added Prioritization category with 5 scenarios (Notion, Uber Eats, Figma, Duolingo, Stripe)

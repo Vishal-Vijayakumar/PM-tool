@@ -8,16 +8,6 @@ const CATEGORIES = [
   { id: 'tradeoffs', label: 'Tradeoff Analysis', description: 'Analyze a product decision where every option has a cost' },
 ]
 
-const ACCENT = {
-  bg: 'bg-red-600',
-  bgHover: 'hover:bg-red-500',
-  text: 'text-red-500',
-  border: 'border-red-500',
-  borderHover: 'hover:border-red-500',
-  ring: 'focus:ring-red-500/40',
-  shadow: 'shadow-[0_0_15px_rgba(220,38,38,0.15)]',
-}
-
 function randomScenario(category) {
   const pool = scenarios.filter((s) => s.category === category)
   return pool[Math.floor(Math.random() * pool.length)]
@@ -63,9 +53,9 @@ function parseScore(text) {
 }
 
 function scoreColor(score) {
-  if (score >= 7) return 'text-emerald-400'
-  if (score >= 4) return 'text-amber-400'
-  return 'text-red-400'
+  if (score >= 7) return 'text-green-700'
+  if (score >= 4) return 'text-yellow-700'
+  return 'text-red-700'
 }
 
 function FeedbackDisplay({ text }) {
@@ -77,9 +67,9 @@ function FeedbackDisplay({ text }) {
         {text.split('\n').map((line, i) => {
           if (line.trim() === '') return <div key={i} className="h-2" />
           if (line.startsWith('- ')) {
-            return <p key={i} className="text-gray-300 pl-4">{line.slice(2)}</p>
+            return <p key={i} className="text-stone-700 pl-4">{line.slice(2)}</p>
           }
-          return <p key={i} className="text-gray-300">{line}</p>
+          return <p key={i} className="text-stone-700">{line}</p>
         })}
       </div>
     )
@@ -95,8 +85,8 @@ function FeedbackDisplay({ text }) {
           const score = parseScore(scoreText)
           return (
             <div key={i} className="mb-2">
-              <span className="text-xs font-semibold tracking-widest uppercase text-gray-500">Score</span>
-              <p className={`text-3xl font-bold mt-1 ${score !== null ? scoreColor(score) : 'text-white'}`}>
+              <span className="text-xs font-bold uppercase tracking-wider text-stone-500">Score</span>
+              <p className={`text-3xl font-black mt-1 ${score !== null ? scoreColor(score) : 'text-stone-800'}`}>
                 {scoreText || 'N/A'}
               </p>
             </div>
@@ -105,10 +95,10 @@ function FeedbackDisplay({ text }) {
 
         if (section.type === 'strengths') {
           return (
-            <div key={i} className="border-l-2 border-emerald-500/60 bg-slate-800/50 rounded-sm p-4">
-              <p className="text-xs font-semibold tracking-widest uppercase text-emerald-400 mb-2">Strengths</p>
+            <div key={i} className="border-l-4 border-green-600 bg-green-50 p-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-green-700 mb-2">Strengths</p>
               {content.map((line, j) => (
-                <p key={j} className="text-gray-300 text-sm leading-relaxed">
+                <p key={j} className="text-stone-700 text-sm leading-relaxed">
                   {line.startsWith('- ') ? line.slice(2) : line}
                 </p>
               ))}
@@ -118,10 +108,10 @@ function FeedbackDisplay({ text }) {
 
         if (section.type === 'gaps') {
           return (
-            <div key={i} className="border-l-2 border-amber-500/60 bg-slate-800/50 rounded-sm p-4">
-              <p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">Gaps</p>
+            <div key={i} className="border-l-4 border-yellow-500 bg-yellow-50 p-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-yellow-700 mb-2">Gaps</p>
               {content.map((line, j) => (
-                <p key={j} className="text-gray-300 text-sm leading-relaxed">
+                <p key={j} className="text-stone-700 text-sm leading-relaxed">
                   {line.startsWith('- ') ? line.slice(2) : line}
                 </p>
               ))}
@@ -131,10 +121,10 @@ function FeedbackDisplay({ text }) {
 
         if (section.type === 'example') {
           return (
-            <div key={i} className={`border-l-2 ${ACCENT.border} bg-slate-800/50 rounded-sm p-4`}>
-              <p className={`text-xs font-semibold tracking-widest uppercase ${ACCENT.text} mb-2`}>Strong Answer Example</p>
+            <div key={i} className="border-l-4 border-sky-500 bg-sky-50 p-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-sky-700 mb-2">Strong Answer Example</p>
               {content.map((line, j) => (
-                <p key={j} className="text-gray-300 text-sm leading-relaxed italic">
+                <p key={j} className="text-stone-700 text-sm leading-relaxed italic">
                   {line.startsWith('- ') ? line.slice(2) : line}
                 </p>
               ))}
@@ -144,10 +134,10 @@ function FeedbackDisplay({ text }) {
 
         if (section.type === 'tip') {
           return (
-            <div key={i} className="bg-slate-700/40 border border-slate-600/50 rounded-sm p-4">
-              <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-2">Interviewer Tip</p>
+            <div key={i} className="border-l-4 border-stone-400 bg-stone-100 p-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-2">Interviewer Tip</p>
               {content.map((line, j) => (
-                <p key={j} className="text-gray-300 text-sm leading-relaxed">
+                <p key={j} className="text-stone-700 text-sm leading-relaxed">
                   {line.startsWith('- ') ? line.slice(2) : line}
                 </p>
               ))}
@@ -159,7 +149,7 @@ function FeedbackDisplay({ text }) {
         return (
           <div key={i}>
             {content.map((line, j) => (
-              <p key={j} className="text-gray-300 text-sm">{line}</p>
+              <p key={j} className="text-stone-700 text-sm">{line}</p>
             ))}
           </div>
         )
@@ -175,6 +165,7 @@ export default function App() {
   const [feedback, setFeedback] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [showModelAnswer, setShowModelAnswer] = useState(false)
 
   function handleCategorySelect(cat) {
     setSelectedCategory(cat.id)
@@ -182,6 +173,7 @@ export default function App() {
     setAnswer('')
     setFeedback(null)
     setError(null)
+    setShowModelAnswer(false)
   }
 
   function handleNewScenario() {
@@ -189,6 +181,7 @@ export default function App() {
     setAnswer('')
     setFeedback(null)
     setError(null)
+    setShowModelAnswer(false)
   }
 
   async function handleSubmit() {
@@ -196,11 +189,13 @@ export default function App() {
     setLoading(true)
     setFeedback(null)
     setError(null)
+    setShowModelAnswer(false)
     try {
       const result = await getAIFeedback(
         selectedCategory,
         scenario.scenario,
-        answer
+        answer,
+        scenario.evaluationHints
       )
       setFeedback(result)
     } catch (e) {
@@ -213,52 +208,55 @@ export default function App() {
   const activeCategory = CATEGORIES.find((c) => c.id === selectedCategory)
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-amber-50">
       <div className="max-w-2xl mx-auto px-4 py-12">
 
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-4xl font-black tracking-tight text-white">
+          <h1
+            className="text-2xl md:text-3xl text-stone-800 tracking-wide"
+            style={{ fontFamily: "'Press Start 2P', cursive", lineHeight: '1.4' }}
+          >
             PM Interview Prep
           </h1>
-          <p className="text-gray-500 text-sm mt-2 tracking-wide uppercase">
+          <p className="text-stone-500 text-sm mt-3">
             Practice product thinking with AI-powered feedback
           </p>
         </div>
 
         {/* Category selector */}
         <div className="mb-8">
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => handleCategorySelect(cat)}
-                className={`px-4 py-2 rounded-sm text-sm font-semibold border transition-colors duration-150
+                className={`px-4 py-2.5 text-sm font-bold border-2 transition-colors duration-100
                   ${
                     selectedCategory === cat.id
-                      ? `${ACCENT.bg} text-white border-transparent ${ACCENT.shadow}`
-                      : `bg-transparent text-gray-400 border-slate-700 ${ACCENT.borderHover} hover:text-gray-200`
+                      ? 'bg-[#5B8C3E] text-white border-[#3d6129]'
+                      : 'bg-stone-100 text-stone-600 border-stone-300 hover:border-[#5B8C3E] hover:text-stone-800'
                   }`}
               >
                 {cat.label}
               </button>
             ))}
           </div>
-          <p className="text-gray-500 text-sm mt-3 tracking-wide">{activeCategory.description}</p>
+          <p className="text-stone-500 text-sm mt-3">{activeCategory.description}</p>
         </div>
 
         {/* Scenario card */}
-        <div className={`bg-slate-800 border-l-2 ${ACCENT.border} rounded-sm p-6 mb-5`}>
+        <div className="bg-amber-100 border-3 border-stone-400 p-6 mb-5 shadow-[3px_3px_0px_0px_rgba(120,100,80,0.3)]" style={{ borderWidth: '3px' }}>
           <div className="flex items-start justify-between gap-4 mb-4">
-            <h2 className="font-bold text-white text-lg">{scenario.title}</h2>
+            <h2 className="font-bold text-stone-800 text-lg">{scenario.title}</h2>
             <button
               onClick={handleNewScenario}
-              className={`text-xs ${ACCENT.text} hover:text-red-400 whitespace-nowrap shrink-0 font-medium tracking-wide uppercase transition-colors duration-150`}
+              className="text-xs text-[#5B8C3E] hover:text-[#3d6129] whitespace-nowrap shrink-0 font-bold uppercase tracking-wide transition-colors duration-100"
             >
               New scenario
             </button>
           </div>
-          <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{scenario.scenario}</p>
+          <p className="text-stone-700 text-sm leading-relaxed whitespace-pre-line">{scenario.scenario}</p>
         </div>
 
         {/* Answer textarea */}
@@ -267,7 +265,7 @@ export default function App() {
           onChange={(e) => setAnswer(e.target.value)}
           placeholder="Type your answer here..."
           rows={8}
-          className={`w-full bg-slate-800 border border-slate-700 rounded-sm p-4 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-red-500/60 focus:ring-1 ${ACCENT.ring} resize-none`}
+          className="w-full bg-amber-100 border-2 border-stone-400 p-4 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:border-[#5B8C3E] focus:ring-2 focus:ring-[#5B8C3E]/30 resize-none"
         />
 
         {/* Submit */}
@@ -275,39 +273,58 @@ export default function App() {
           <button
             onClick={handleSubmit}
             disabled={loading || !answer.trim()}
-            className={`px-5 py-2.5 ${ACCENT.bg} text-white text-sm font-bold rounded-sm ${ACCENT.bgHover} transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed tracking-wide uppercase`}
+            className="px-6 py-2.5 bg-[#5B8C3E] text-white text-sm font-bold border-2 border-[#3d6129] hover:bg-[#4a7832] transition-colors duration-100 disabled:opacity-30 disabled:cursor-not-allowed shadow-[2px_2px_0px_0px_rgba(61,97,41,0.5)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
           >
             {loading ? 'Evaluating...' : 'Get Feedback'}
           </button>
           {loading && (
-            <span className="text-sm text-gray-500">This takes ~10 seconds</span>
+            <span className="text-sm text-stone-500">This takes ~10 seconds</span>
           )}
         </div>
 
         {/* Error */}
         {error && (
-          <div className="mt-5 p-4 bg-red-950/50 border border-red-800/50 rounded-sm text-sm text-red-400">
+          <div className="mt-5 p-4 bg-red-100 border-2 border-red-400 text-sm text-red-800">
             {error}
           </div>
         )}
 
         {/* Feedback */}
         {feedback && (
-          <div className="mt-8 bg-slate-900 border border-slate-800 rounded-sm p-6">
-            <h3 className="text-xs font-semibold tracking-widest uppercase text-gray-500 mb-5">Feedback</h3>
+          <div className="mt-8 bg-amber-100 border-2 border-stone-400 p-6 shadow-[3px_3px_0px_0px_rgba(120,100,80,0.3)]">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-5">Feedback</h3>
             <FeedbackDisplay text={feedback} />
+
+            {/* Model Answer toggle */}
+            {scenario.modelAnswer && (
+              <div className="mt-6 pt-4 border-t-2 border-stone-300">
+                <button
+                  onClick={() => setShowModelAnswer(!showModelAnswer)}
+                  className="text-sm font-bold text-[#5B8C3E] hover:text-[#3d6129] transition-colors duration-100 flex items-center gap-2"
+                >
+                  <span className="text-base leading-none">{showModelAnswer ? '▼' : '▶'}</span>
+                  See a strong answer
+                </button>
+                {showModelAnswer && (
+                  <div className="mt-4 bg-amber-50 border-2 border-stone-300 p-5">
+                    <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">Expert Answer</p>
+                    <p className="text-stone-700 text-sm leading-relaxed whitespace-pre-line">{scenario.modelAnswer}</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
         {/* Footer */}
-        <div className="mt-16 pt-4 border-t border-slate-800">
-          <p className="text-center text-xs text-gray-600">
+        <div className="mt-16 pt-4 border-t-2 border-stone-300">
+          <p className="text-center text-xs text-stone-400">
             Built by{' '}
             <a
               href="https://www.linkedin.com/in/vishal-vijay-x0x/"
               target="_blank"
               rel="noopener noreferrer"
-              className={`${ACCENT.text} hover:text-red-400 transition-colors duration-150`}
+              className="text-[#5B8C3E] hover:text-[#3d6129] transition-colors duration-100"
             >
               Vishal Vijayakumar
             </a>
