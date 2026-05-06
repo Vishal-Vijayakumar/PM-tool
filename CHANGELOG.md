@@ -1,5 +1,8 @@
 # PM Prep Tool -- Changelog
 
+## UI Fix -- 2026-05-06
+- Styled "New scenario" link as a Minecraft dirt block button (brown background, white text, blocky shadow, no rounding)
+
 ## Scoring Fix -- 2026-05-06
 - Added minimum effort check to all 3 evaluator prompts (gibberish gets 0/10, one-word answers get 1/10, generic answers get 2-3/10)
 - Replaced scoring guidance with explicit calibration scale (0-1 gibberish through 9-10 exceptional/rare)

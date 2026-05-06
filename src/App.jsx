@@ -251,7 +251,7 @@ export default function App() {
             <h2 className="font-bold text-stone-800 text-lg">{scenario.title}</h2>
             <button
               onClick={handleNewScenario}
-              className="text-xs text-[#5B8C3E] hover:text-[#3d6129] whitespace-nowrap shrink-0 font-bold uppercase tracking-wide transition-colors duration-100"
+              className="text-xs text-white whitespace-nowrap shrink-0 font-bold uppercase tracking-wide bg-[#8B6B4A] border-2 border-[#5C3D2E] px-3 py-1.5 hover:bg-[#9E7B56] transition-colors duration-100 shadow-[2px_2px_0px_0px_rgba(92,61,46,0.5)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
             >
               New scenario
             </button>
