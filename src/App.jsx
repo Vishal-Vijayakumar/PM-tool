@@ -13,9 +13,40 @@ function randomScenario(category) {
   return pool[Math.floor(Math.random() * pool.length)]
 }
 
+function parseDimensionScores(text) {
+  const match = text.match(/DIMENSION_SCORES:\s*\n([\s\S]*?)END_SCORES/)
+  if (!match) return null
+
+  const block = match[1]
+  const dimensions = []
+  let overall = null
+
+  for (const line of block.split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+    const overallMatch = trimmed.match(/^OVERALL:\s*(\d+(?:\.\d+)?)\s*\/\s*10/i)
+    if (overallMatch) {
+      overall = parseFloat(overallMatch[1])
+      continue
+    }
+    const dimMatch = trimmed.match(/^(.+?):\s*(\d+(?:\.\d+)?)\s*\/\s*10/)
+    if (dimMatch) {
+      dimensions.push({ name: dimMatch[1].trim(), score: parseFloat(dimMatch[2]) })
+    }
+  }
+
+  if (dimensions.length === 0) return null
+  return { dimensions, overall }
+}
+
+function stripDimensionBlock(text) {
+  return text.replace(/DIMENSION_SCORES:\s*\n[\s\S]*?END_SCORES\s*\n?/, '').trim()
+}
+
 function parseFeedbackSections(text) {
+  const cleaned = stripDimensionBlock(text)
   const sections = []
-  const lines = text.split('\n')
+  const lines = cleaned.split('\n')
   let currentSection = null
   let currentLines = []
 
@@ -27,15 +58,15 @@ function parseFeedbackSections(text) {
       if (currentSection || currentLines.length > 0) {
         sections.push({ type: currentSection, lines: currentLines })
       }
-      const cleaned = line.replace(/\*\*/g, '').trim()
-      if (/^SCORE/i.test(cleaned)) currentSection = 'score'
-      else if (/^STRENGTHS/i.test(cleaned)) currentSection = 'strengths'
-      else if (/^GAPS/i.test(cleaned)) currentSection = 'gaps'
-      else if (/^STRONG ANSWER/i.test(cleaned)) currentSection = 'example'
-      else if (/^INTERVIEWER TIP/i.test(cleaned)) currentSection = 'tip'
+      const cleanedLine = line.replace(/\*\*/g, '').trim()
+      if (/^SCORE/i.test(cleanedLine)) currentSection = 'score'
+      else if (/^STRENGTHS/i.test(cleanedLine)) currentSection = 'strengths'
+      else if (/^GAPS/i.test(cleanedLine)) currentSection = 'gaps'
+      else if (/^STRONG ANSWER/i.test(cleanedLine)) currentSection = 'example'
+      else if (/^INTERVIEWER TIP/i.test(cleanedLine)) currentSection = 'tip'
       else currentSection = 'other'
 
-      const remainder = cleaned.replace(/^(SCORE|STRENGTHS|GAPS|STRONG ANSWER EXAMPLE|INTERVIEWER TIP)[:\s]*/i, '').trim()
+      const remainder = cleanedLine.replace(/^(SCORE|STRENGTHS|GAPS|STRONG ANSWER EXAMPLE|INTERVIEWER TIP)[:\s]*/i, '').trim()
       currentLines = remainder ? [remainder] : []
     } else {
       currentLines.push(line)
@@ -58,10 +89,54 @@ function scoreColor(score) {
   return 'text-red-700'
 }
 
+function dimScoreColor(score) {
+  if (score >= 7) return 'bg-green-700'
+  if (score >= 4) return 'bg-yellow-600'
+  return 'bg-red-700'
+}
+
+function dimScoreBg(score) {
+  if (score >= 7) return 'bg-green-50'
+  if (score >= 4) return 'bg-yellow-50'
+  return 'bg-red-50'
+}
+
+function DimensionScores({ dimensionData }) {
+  const { dimensions, overall } = dimensionData
+  return (
+    <div className="mb-5">
+      <span className="text-xs font-bold uppercase tracking-wider text-stone-500">Dimension Scores</span>
+      <div className="mt-2 border-2 border-stone-400 bg-stone-100 p-3">
+        <div className="space-y-2">
+          {dimensions.map((dim, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <span className="text-xs font-bold text-stone-600 w-44 shrink-0 truncate">{dim.name}</span>
+              <div className="flex-1 h-4 bg-stone-300 border border-stone-400 relative">
+                <div
+                  className={`h-full ${dimScoreColor(dim.score)}`}
+                  style={{ width: `${dim.score * 10}%` }}
+                />
+              </div>
+              <span className={`text-xs font-black w-8 text-right ${scoreColor(dim.score)}`}>{dim.score}</span>
+            </div>
+          ))}
+        </div>
+        {overall !== null && (
+          <div className="mt-3 pt-3 border-t-2 border-stone-300 flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-stone-500">Overall</span>
+            <span className={`text-2xl font-black ${scoreColor(overall)}`}>{overall}/10</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function FeedbackDisplay({ text }) {
+  const dimensionData = parseDimensionScores(text)
   const sections = parseFeedbackSections(text)
 
-  if (sections.length <= 1) {
+  if (sections.length <= 1 && !dimensionData) {
     return (
       <div className="space-y-2">
         {text.split('\n').map((line, i) => {
@@ -77,10 +152,12 @@ function FeedbackDisplay({ text }) {
 
   return (
     <div className="space-y-4">
+      {dimensionData && <DimensionScores dimensionData={dimensionData} />}
       {sections.map((section, i) => {
         const content = section.lines.filter((l) => l.trim() !== '')
 
         if (section.type === 'score') {
+          if (dimensionData) return null
           const scoreText = content.join(' ')
           const score = parseScore(scoreText)
           return (
@@ -213,12 +290,17 @@ export default function App() {
 
         {/* Header */}
         <div className="mb-10">
-          <h1
-            className="text-2xl md:text-3xl text-stone-800 tracking-wide"
-            style={{ fontFamily: "'Press Start 2P', cursive", lineHeight: '1.4' }}
-          >
-            PM Interview Prep
-          </h1>
+          <div className="flex items-start gap-3">
+            <h1
+              className="text-2xl md:text-3xl text-stone-800 tracking-wide"
+              style={{ fontFamily: "'Press Start 2P', cursive", lineHeight: '1.4' }}
+            >
+              PM Interview Prep
+            </h1>
+            <span className="mt-1 bg-[#5B8C3E] border-2 border-[#3d6129] px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white shadow-[1px_1px_0px_0px_rgba(61,97,41,0.5)]">
+              Beta
+            </span>
+          </div>
           <p className="text-stone-500 text-sm mt-3">
             Practice product thinking with AI-powered feedback
           </p>

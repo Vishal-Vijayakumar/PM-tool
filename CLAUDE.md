@@ -44,7 +44,7 @@ pm-prep-tool/
 3. **Tradeoff Analysis** — Given a product decision with tradeoffs, analyze and recommend
 
 ## Current Status
-**Phase 3 complete + polish pass. Minecraft UI, model answers, value prop chips, Vercel deployment ready.**
+**Phase 3 complete + polish pass. Minecraft UI, model answers, value prop chips, 5-dimension score display, beta label, Vercel deployment live.**
 
 ### What's been built
 - Vite + React + Tailwind CSS project with Minecraft-inspired UI (warm parchment tones, blocky panels, Press Start 2P title font, green accent)
@@ -53,10 +53,12 @@ pm-prep-tool/
   - Metrics Definition (5): Instagram, Slack, DoorDash, Spotify, Google Maps
   - Prioritization (5): Notion, Uber Eats, Figma, Duolingo, Stripe
   - Tradeoff Analysis (5): Spotify, LinkedIn, Airbnb, Slack, Reddit
-- Category-specific AI evaluation prompts in `src/prompts/evaluator.js` (one rubric per category, with minimum effort check and scoring calibration floor)
+- Category-specific AI evaluation prompts in `src/prompts/evaluator.js` (one rubric per category, with minimum effort check, scoring calibration floor, and structured DIMENSION_SCORES output block)
 - Scenario-specific evaluation hints appended to the system prompt at call time in `src/utils/api.js`
 - Nvidia NIM API integration in `src/utils/api.js` -- dev uses Vite proxy, production uses Vercel serverless function
 - Vercel serverless proxy at `api/feedback.js` -- forwards requests to Nvidia NIM with server-side API key, CORS headers set
+- 5-dimension score display: each evaluator prompt outputs per-dimension scores, parsed and rendered as color-coded stat bars in a Minecraft inventory panel; graceful fallback to single overall score if parsing fails
+- "BETA" badge next to main title (green Minecraft block style)
 - Structured feedback display: parsed sections with color-coded left borders (green for strengths, amber for gaps, blue for examples, stone for tips), score with color scaling
 - "See a strong answer" collapsible section appears after feedback, showing the curated model answer
 - Footer with LinkedIn link

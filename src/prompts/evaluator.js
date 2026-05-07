@@ -20,9 +20,18 @@ Evaluate their answer on these 5 dimensions, each scored 1-10:
 
 5. DECISION CRITERIA (Does the candidate explain what threshold or signal would lead to a specific product decision -- e.g., "if retention drops below X%, we deprioritize this feature"?)
 
-Respond in this exact format:
+Begin your response with dimension scores in EXACTLY this format (one per line, no deviations):
 
-SCORE: [average of 5 dimensions, rounded to nearest 0.5]/10
+DIMENSION_SCORES:
+Metric Selection: [score]/10
+Framework Structure: [score]/10
+Tradeoff Awareness: [score]/10
+Measurement Feasibility: [score]/10
+Decision Criteria: [score]/10
+OVERALL: [average of 5 dimensions, rounded to nearest 0.5]/10
+END_SCORES
+
+Then continue with the rest of the feedback in this exact format:
 
 STRENGTHS:
 - [specific strength from their answer, referencing what they actually wrote]
@@ -76,9 +85,18 @@ Evaluate their answer on these 5 dimensions, each scored 1-10:
 
 5. STAKEHOLDER THINKING (Did the candidate consider how different stakeholders -- users, execs, sales, engineering -- would react to this prioritization? Did they think about how they would communicate the decision?)
 
-Respond in this exact format:
+Begin your response with dimension scores in EXACTLY this format (one per line, no deviations):
 
-SCORE: [average of 5 dimensions, rounded to nearest 0.5]/10
+DIMENSION_SCORES:
+Decision Clarity: [score]/10
+Reasoning Quality: [score]/10
+Constraint Awareness: [score]/10
+Risk Acknowledgment: [score]/10
+Stakeholder Thinking: [score]/10
+OVERALL: [average of 5 dimensions, rounded to nearest 0.5]/10
+END_SCORES
+
+Then continue with the rest of the feedback in this exact format:
 
 STRENGTHS:
 - [specific strength from their answer, referencing what they actually wrote]
@@ -134,9 +152,18 @@ Evaluate their answer on these 5 dimensions, each scored 1-10:
 
 5. STAKEHOLDER IMPACT (Did the candidate map out who wins and who loses under their recommendation? Did they think about how to communicate the decision to the losing side and mitigate backlash?)
 
-Respond in this exact format:
+Begin your response with dimension scores in EXACTLY this format (one per line, no deviations):
 
-SCORE: [average of 5 dimensions, rounded to nearest 0.5]/10
+DIMENSION_SCORES:
+Tradeoff Identification: [score]/10
+Second-Order Thinking: [score]/10
+Recommendation Strength: [score]/10
+Evidence Usage: [score]/10
+Stakeholder Impact: [score]/10
+OVERALL: [average of 5 dimensions, rounded to nearest 0.5]/10
+END_SCORES
+
+Then continue with the rest of the feedback in this exact format:
 
 STRENGTHS:
 - [specific strength from their answer, referencing what they actually wrote]

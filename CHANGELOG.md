@@ -1,5 +1,12 @@
 # PM Prep Tool -- Changelog
 
+## 5-Dimension Score Display + Beta Label -- 2026-05-07
+- Evaluator prompts now output per-dimension scores in a structured DIMENSION_SCORES block
+- Frontend parses dimension scores and renders them as Minecraft-themed stat bars (color-coded green/amber/red)
+- Overall score displayed below dimension breakdown; graceful fallback to single score if parsing fails
+- Added "BETA" badge next to main title (green Minecraft block style)
+- Fulfills the "5-Dimension Scoring" value prop chip promise -- users now see all 5 dimension scores
+
 ## Value Prop Chips -- 2026-05-06
 - Added three stone-panel chips below subtitle: "15 Real Scenarios", "5-Dimension Scoring", "Expert Model Answers"
 - Communicates tool depth above the fold so first-time visitors know this is not a ChatGPT wrapper
