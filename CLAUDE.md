@@ -61,7 +61,7 @@ pm-prep-tool/
 - "BETA" badge next to main title (green Minecraft block style)
 - Structured feedback display: parsed sections with color-coded left borders (green for strengths, amber for gaps, blue for examples, stone for tips), score with color scaling
 - "See a strong answer" collapsible section appears after feedback, showing the curated model answer
-- Footer with LinkedIn link
+- Minimal footer divider line (no personal info)
 
 ### What's working
 - Value prop chips visible on landing view (above the fold credibility signals)

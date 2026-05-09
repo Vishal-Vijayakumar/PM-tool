@@ -409,19 +409,7 @@ export default function App() {
         )}
 
         {/* Footer */}
-        <div className="mt-16 pt-4 border-t-2 border-stone-300">
-          <p className="text-center text-xs text-stone-400">
-            Built by{' '}
-            <a
-              href="https://www.linkedin.com/in/vishal-vijay-x0x/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#5B8C3E] hover:text-[#3d6129] transition-colors duration-100"
-            >
-              Vishal Vijayakumar
-            </a>
-          </p>
-        </div>
+        <div className="mt-16 border-t-2 border-stone-300" />
       </div>
     </div>
   )
