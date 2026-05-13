@@ -1,5 +1,13 @@
 # PM Prep Tool -- Changelog
 
+## Feedback Flow Reorder + Key Concepts Checklist -- 2026-05-13
+- Restructured feedback flow so self-evaluation happens BEFORE the AI scores are revealed (prevents users from anchoring to the AI rating)
+- New order after submission: qualitative feedback (Strengths, Gaps, Interviewer Tip) -> self-evaluation -> reveal of dimension scores + comparison + Overall -> key concepts checklist -> model answer toggle
+- Added "Concepts to consider for this scenario" panel that renders scenario.evaluationHints as a checklist with diamond-blue left border, shown alongside the score comparison
+- Hid the AI-generated STRONG ANSWER EXAMPLE section entirely; the curated modelAnswer behind the gate now serves that role
+- Hid the SCORE: header line when dimension scores are present (was duplicating the Overall row)
+- Fallback path (gibberish/low-effort): self-eval gate is still skipped and the model answer toggle appears directly
+
 ## Self-Evaluation Gate -- 2026-05-13
 - Model answer is now gated behind a self-evaluation step: users must rate themselves on each dimension before the expert answer unlocks
 - Self-eval uses Minecraft-styled score blocks (1-10) for each of the 5 dimensions

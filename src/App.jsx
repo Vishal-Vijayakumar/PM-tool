@@ -136,7 +136,7 @@ function SelfEvaluation({ dimensions, onSubmit }) {
   return (
     <div className="mt-6 pt-4 border-t-2 border-stone-300">
       <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-1">Self-Evaluation</p>
-      <p className="text-sm text-stone-600 mb-4">Before seeing the expert answer, rate your own response on each dimension:</p>
+      <p className="text-sm text-stone-600 mb-4">Before seeing your scores, rate your own response on each dimension:</p>
       <div className="border-2 border-stone-400 bg-stone-100 p-3 space-y-3">
         {dimensions.map((dim) => (
           <div key={dim.name}>
@@ -232,13 +232,39 @@ function DimensionScores({ dimensionData }) {
   )
 }
 
+function KeyConcepts({ hints }) {
+  if (!hints || hints.length === 0) return null
+  return (
+    <div className="mt-6 border-l-4 border-sky-500 bg-sky-50 p-4">
+      <p className="text-xs font-bold uppercase tracking-wider text-sky-700 mb-2">Concepts to consider for this scenario</p>
+      <ul className="space-y-1.5">
+        {hints.map((hint, i) => (
+          <li key={i} className="text-stone-700 text-sm leading-relaxed flex items-start gap-2">
+            <span className="text-sky-600 font-black mt-0.5 shrink-0">▢</span>
+            <span>{hint}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 function FeedbackDisplay({ text }) {
   const dimensionData = parseDimensionScores(text)
   const sections = parseFeedbackSections(text)
 
+  // Fallback for gibberish/low-effort responses (no structured sections, no dimensions)
   if (sections.length <= 1 && !dimensionData) {
+    // Try to surface a single SCORE line if present, otherwise render raw text
+    const score = parseScore(text)
     return (
       <div className="space-y-2">
+        {score !== null && (
+          <div className="mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-stone-500">Score</span>
+            <p className={`text-3xl font-black mt-1 ${scoreColor(score)}`}>{score}/10</p>
+          </div>
+        )}
         {text.split('\n').map((line, i) => {
           if (line.trim() === '') return <div key={i} className="h-2" />
           if (line.startsWith('- ')) {
@@ -250,25 +276,13 @@ function FeedbackDisplay({ text }) {
     )
   }
 
+  // Qualitative-only render: STRENGTHS, GAPS, INTERVIEWER TIP. Hide dimensions,
+  // score line, strong answer example, and calibration. The App orchestrates
+  // when dimension scores and the curated model answer become visible.
   return (
     <div className="space-y-4">
-      {dimensionData && <DimensionScores dimensionData={dimensionData} />}
       {sections.map((section, i) => {
         const content = section.lines.filter((l) => l.trim() !== '')
-
-        if (section.type === 'score') {
-          if (dimensionData) return null
-          const scoreText = content.join(' ')
-          const score = parseScore(scoreText)
-          return (
-            <div key={i} className="mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-stone-500">Score</span>
-              <p className={`text-3xl font-black mt-1 ${score !== null ? scoreColor(score) : 'text-stone-800'}`}>
-                {scoreText || 'N/A'}
-              </p>
-            </div>
-          )
-        }
 
         if (section.type === 'strengths') {
           return (
@@ -296,19 +310,6 @@ function FeedbackDisplay({ text }) {
           )
         }
 
-        if (section.type === 'example') {
-          return (
-            <div key={i} className="border-l-4 border-sky-500 bg-sky-50 p-4">
-              <p className="text-xs font-bold uppercase tracking-wider text-sky-700 mb-2">Strong Answer Example</p>
-              {content.map((line, j) => (
-                <p key={j} className="text-stone-700 text-sm leading-relaxed italic">
-                  {line.startsWith('- ') ? line.slice(2) : line}
-                </p>
-              ))}
-            </div>
-          )
-        }
-
         if (section.type === 'tip') {
           return (
             <div key={i} className="border-l-4 border-stone-400 bg-stone-100 p-4">
@@ -322,17 +323,10 @@ function FeedbackDisplay({ text }) {
           )
         }
 
-        // Drop calibration and other internal sections
-        if (section.type === 'calibration' || section.type === 'other') return null
-
-        if (content.length === 0) return null
-        return (
-          <div key={i}>
-            {content.map((line, j) => (
-              <p key={j} className="text-stone-700 text-sm">{line}</p>
-            ))}
-          </div>
-        )
+        // Drop dimension score, strong answer example, calibration, and other
+        // internal sections. Scores reveal after self-eval; example is replaced
+        // by the curated modelAnswer behind the gate.
+        return null
       })}
     </div>
   )
@@ -493,74 +487,59 @@ export default function App() {
         )}
 
         {/* Feedback */}
-        {feedback && (
-          <div className="mt-8 bg-amber-100 border-2 border-stone-400 p-6 shadow-[3px_3px_0px_0px_rgba(120,100,80,0.3)]">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-5">Feedback</h3>
-            <FeedbackDisplay text={feedback} />
+        {feedback && (() => {
+          const dimData = parseDimensionScores(feedback)
+          const hasDimensions = dimData && dimData.dimensions.length > 0
+          const showModelAnswerToggle = scenario.modelAnswer && (!hasDimensions || selfEvalComplete)
 
-            {/* Self-evaluation gate + Model Answer */}
-            {scenario.modelAnswer && (() => {
-              const dimData = parseDimensionScores(feedback)
-              const hasDimensions = dimData && dimData.dimensions.length > 0
+          return (
+            <div className="mt-8 bg-amber-100 border-2 border-stone-400 p-6 shadow-[3px_3px_0px_0px_rgba(120,100,80,0.3)]">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-5">Feedback</h3>
 
-              // No dimension scores parsed (fallback mode): skip gate, show toggle directly
-              if (!hasDimensions) {
-                return (
-                  <div className="mt-6 pt-4 border-t-2 border-stone-300">
-                    <button
-                      onClick={() => setShowModelAnswer(!showModelAnswer)}
-                      className="text-sm font-bold text-[#5B8C3E] hover:text-[#3d6129] transition-colors duration-100 flex items-center gap-2"
-                    >
-                      <span className="text-base leading-none">{showModelAnswer ? '▼' : '▶'}</span>
-                      See a strong answer
-                    </button>
-                    {showModelAnswer && (
-                      <div className="mt-4 bg-amber-50 border-2 border-stone-300 p-5">
-                        <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">Expert Answer</p>
-                        <p className="text-stone-700 text-sm leading-relaxed whitespace-pre-line">{scenario.modelAnswer}</p>
-                      </div>
-                    )}
-                  </div>
-                )
-              }
+              {/* Qualitative feedback only (strengths, gaps, tip). No scores yet. */}
+              <FeedbackDisplay text={feedback} />
 
-              // Self-eval not done yet: show self-eval form
-              if (!selfEvalComplete) {
-                return (
-                  <SelfEvaluation
-                    dimensions={dimData.dimensions}
-                    onSubmit={(ratings) => {
-                      setSelfEvalRatings(ratings)
-                      setSelfEvalComplete(true)
-                    }}
-                  />
-                )
-              }
+              {/* Self-evaluation gate -- only when dimensions parsed and not yet submitted */}
+              {hasDimensions && !selfEvalComplete && (
+                <SelfEvaluation
+                  dimensions={dimData.dimensions}
+                  onSubmit={(ratings) => {
+                    setSelfEvalRatings(ratings)
+                    setSelfEvalComplete(true)
+                  }}
+                />
+              )}
 
-              // Self-eval done: show comparison + model answer toggle
-              return (
-                <>
+              {/* Score reveal: dimension scores, comparison, key concepts */}
+              {hasDimensions && selfEvalComplete && (
+                <div className="mt-6 pt-4 border-t-2 border-stone-300">
+                  <DimensionScores dimensionData={dimData} />
                   <ScoreComparison dimensions={dimData.dimensions} selfRatings={selfEvalRatings} />
-                  <div className="mt-6 pt-4 border-t-2 border-stone-300">
-                    <button
-                      onClick={() => setShowModelAnswer(!showModelAnswer)}
-                      className="text-sm font-bold text-[#5B8C3E] hover:text-[#3d6129] transition-colors duration-100 flex items-center gap-2"
-                    >
-                      <span className="text-base leading-none">{showModelAnswer ? '▼' : '▶'}</span>
-                      See a strong answer
-                    </button>
-                    {showModelAnswer && (
-                      <div className="mt-4 bg-amber-50 border-2 border-stone-300 p-5">
-                        <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">Expert Answer</p>
-                        <p className="text-stone-700 text-sm leading-relaxed whitespace-pre-line">{scenario.modelAnswer}</p>
-                      </div>
-                    )}
-                  </div>
-                </>
-              )
-            })()}
-          </div>
-        )}
+                  <KeyConcepts hints={scenario.evaluationHints} />
+                </div>
+              )}
+
+              {/* Model answer toggle -- after self-eval or in fallback mode */}
+              {showModelAnswerToggle && (
+                <div className="mt-6 pt-4 border-t-2 border-stone-300">
+                  <button
+                    onClick={() => setShowModelAnswer(!showModelAnswer)}
+                    className="text-sm font-bold text-[#5B8C3E] hover:text-[#3d6129] transition-colors duration-100 flex items-center gap-2"
+                  >
+                    <span className="text-base leading-none">{showModelAnswer ? '▼' : '▶'}</span>
+                    See a strong answer
+                  </button>
+                  {showModelAnswer && (
+                    <div className="mt-4 bg-amber-50 border-2 border-stone-300 p-5">
+                      <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">Expert Answer</p>
+                      <p className="text-stone-700 text-sm leading-relaxed whitespace-pre-line">{scenario.modelAnswer}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })()}
 
         {/* Footer */}
         <div className="mt-16 border-t-2 border-stone-300" />

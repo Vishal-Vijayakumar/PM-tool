@@ -60,7 +60,9 @@ pm-prep-tool/
 - 5-dimension score display: each evaluator prompt outputs per-dimension scores, parsed and rendered as color-coded stat bars in a Minecraft inventory panel; graceful fallback to single overall score if parsing fails
 - "BETA" badge next to main title (green Minecraft block style)
 - Structured feedback display: parsed sections with color-coded left borders (green for strengths, amber for gaps, blue for examples, stone for tips), score with color scaling
-- Self-evaluation gate: after AI feedback, users must rate themselves on each dimension (Minecraft score blocks 1-10) before the model answer unlocks; comparison view shows You vs AI with color-coded gap; graceful fallback skips gate when dimension parsing fails
+- Reordered feedback flow: qualitative feedback (Strengths/Gaps/Interviewer Tip) appears first, then self-evaluation, then dimension scores + comparison + key concepts checklist, then model answer toggle. This prevents users from anchoring their self-rating to the AI's score.
+- Self-evaluation gate: after qualitative feedback, users rate themselves on each dimension (Minecraft score blocks 1-10) before the AI scores or model answer unlock; comparison view shows You vs AI with color-coded gap (green within 1, amber 2-3, red 4+); graceful fallback skips gate when dimension parsing fails
+- Key Concepts checklist: after self-eval reveal, the scenario's evaluationHints render as a diamond-blue checklist panel labeled "Concepts to consider for this scenario"
 - "See a strong answer" collapsible section appears after self-evaluation (or directly if no dimension scores), showing the curated model answer
 - Minimal footer divider line (no personal info)
 
@@ -71,8 +73,9 @@ pm-prep-tool/
 - Evaluation hints from each scenario are appended to the system prompt for more targeted feedback
 - "New scenario" button cycles through scenarios in the active category
 - Feedback parsed into styled sections (score, strengths, gaps, example, tip)
-- Self-evaluation gate blocks model answer until user self-rates on all 5 dimensions
-- Score comparison (You vs AI) with self-awareness summary shown after self-eval
+- Qualitative feedback (Strengths/Gaps/Interviewer Tip) shows immediately; dimension scores are hidden until self-evaluation is submitted
+- Self-evaluation gate blocks both scores and model answer until user self-rates on all 5 dimensions
+- Score comparison (You vs AI) with self-awareness summary + Key Concepts checklist (from scenario.evaluationHints) shown after self-eval
 - Model answer toggle appears after self-evaluation is complete (or directly in fallback mode)
 - Category descriptions shown under the selector buttons
 - Error display if the API call fails
