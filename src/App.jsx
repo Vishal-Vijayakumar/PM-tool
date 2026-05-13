@@ -14,7 +14,8 @@ function randomScenario(category) {
 }
 
 function parseDimensionScores(text) {
-  const match = text.match(/DIMENSION_SCORES:\s*\n([\s\S]*?)END_SCORES/)
+  // Match DIMENSION_SCORES block ending at END_SCORES, or at the first feedback section header, or at a double newline
+  const match = text.match(/DIMENSION_SCORES:\s*\n([\s\S]*?)(?:END_SCORES|(?=\n\s*(?:STRENGTHS|GAPS|STRONG ANSWER|INTERVIEWER TIP|SCORE)[:\s])|\n\s*\n\s*\n)/)
   if (!match) return null
 
   const block = match[1]
@@ -40,7 +41,7 @@ function parseDimensionScores(text) {
 }
 
 function stripDimensionBlock(text) {
-  return text.replace(/DIMENSION_SCORES:\s*\n[\s\S]*?END_SCORES\s*\n?/, '').trim()
+  return text.replace(/DIMENSION_SCORES:\s*\n[\s\S]*?(?:END_SCORES\s*\n?|(?=\n\s*(?:STRENGTHS|GAPS|STRONG ANSWER|INTERVIEWER TIP|SCORE)[:\s])|\n\s*\n\s*\n)/, '').trim()
 }
 
 function parseFeedbackSections(text) {
@@ -51,22 +52,23 @@ function parseFeedbackSections(text) {
   let currentLines = []
 
   for (const line of lines) {
-    const headerMatch = line.match(/^(?:\*\*)?(?:SCORE|STRENGTHS|GAPS|STRONG ANSWER EXAMPLE|INTERVIEWER TIP)[:\s]/i)
-      || line.match(/^(?:\*\*)?(?:SCORE|STRENGTHS|GAPS|STRONG ANSWER EXAMPLE|INTERVIEWER TIP)(?:\*\*)?$/i)
+    const headerMatch = line.match(/^(?:\*\*)?(?:SCORE|STRENGTHS|GAPS|STRONG ANSWER EXAMPLE|INTERVIEWER TIP|SCORING CALIBRATION)[:\s]/i)
+      || line.match(/^(?:\*\*)?(?:SCORE|STRENGTHS|GAPS|STRONG ANSWER EXAMPLE|INTERVIEWER TIP|SCORING CALIBRATION)(?:\*\*)?$/i)
 
     if (headerMatch) {
       if (currentSection || currentLines.length > 0) {
         sections.push({ type: currentSection, lines: currentLines })
       }
       const cleanedLine = line.replace(/\*\*/g, '').trim()
-      if (/^SCORE/i.test(cleanedLine)) currentSection = 'score'
+      if (/^SCORING CALIBRATION/i.test(cleanedLine)) currentSection = 'calibration'
+      else if (/^SCORE/i.test(cleanedLine)) currentSection = 'score'
       else if (/^STRENGTHS/i.test(cleanedLine)) currentSection = 'strengths'
       else if (/^GAPS/i.test(cleanedLine)) currentSection = 'gaps'
       else if (/^STRONG ANSWER/i.test(cleanedLine)) currentSection = 'example'
       else if (/^INTERVIEWER TIP/i.test(cleanedLine)) currentSection = 'tip'
       else currentSection = 'other'
 
-      const remainder = cleanedLine.replace(/^(SCORE|STRENGTHS|GAPS|STRONG ANSWER EXAMPLE|INTERVIEWER TIP)[:\s]*/i, '').trim()
+      const remainder = cleanedLine.replace(/^(SCORE|STRENGTHS|GAPS|STRONG ANSWER EXAMPLE|INTERVIEWER TIP|SCORING CALIBRATION)[:\s]*/i, '').trim()
       currentLines = remainder ? [remainder] : []
     } else {
       currentLines.push(line)
@@ -319,6 +321,9 @@ function FeedbackDisplay({ text }) {
             </div>
           )
         }
+
+        // Drop calibration and other internal sections
+        if (section.type === 'calibration' || section.type === 'other') return null
 
         if (content.length === 0) return null
         return (
