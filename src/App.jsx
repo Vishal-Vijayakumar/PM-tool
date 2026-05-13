@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { scenarios } from './data/scenarios'
 import { getAIFeedback } from './utils/api'
 
@@ -99,6 +99,104 @@ function dimScoreBg(score) {
   if (score >= 7) return 'bg-green-50'
   if (score >= 4) return 'bg-yellow-50'
   return 'bg-red-50'
+}
+
+function gapColor(gap) {
+  if (gap <= 1) return { text: 'text-green-700', bg: 'bg-green-100', border: 'border-green-400' }
+  if (gap <= 3) return { text: 'text-yellow-700', bg: 'bg-yellow-100', border: 'border-yellow-400' }
+  return { text: 'text-red-700', bg: 'bg-red-100', border: 'border-red-400' }
+}
+
+function ScoreBlock({ value, selected, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-7 h-7 text-xs font-black border-2 transition-colors duration-100
+        ${selected
+          ? 'bg-[#5B8C3E] text-white border-[#3d6129]'
+          : 'bg-stone-200 text-stone-500 border-stone-400 hover:bg-stone-300 hover:text-stone-700'
+        }`}
+    >
+      {value}
+    </button>
+  )
+}
+
+function SelfEvaluation({ dimensions, onSubmit }) {
+  const [ratings, setRatings] = useState({})
+
+  const allRated = dimensions.every((dim) => ratings[dim.name] !== undefined)
+
+  function handleRate(dimName, score) {
+    setRatings((prev) => ({ ...prev, [dimName]: score }))
+  }
+
+  return (
+    <div className="mt-6 pt-4 border-t-2 border-stone-300">
+      <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-1">Self-Evaluation</p>
+      <p className="text-sm text-stone-600 mb-4">Before seeing the expert answer, rate your own response on each dimension:</p>
+      <div className="border-2 border-stone-400 bg-stone-100 p-3 space-y-3">
+        {dimensions.map((dim) => (
+          <div key={dim.name}>
+            <span className="text-xs font-bold text-stone-600 block mb-1">{dim.name}</span>
+            <div className="flex gap-1 flex-wrap">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((v) => (
+                <ScoreBlock
+                  key={v}
+                  value={v}
+                  selected={ratings[dim.name] === v}
+                  onClick={() => handleRate(dim.name, v)}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <button
+        onClick={() => onSubmit(ratings)}
+        disabled={!allRated}
+        className="mt-4 px-6 py-2.5 bg-[#5B8C3E] text-white text-sm font-bold border-2 border-[#3d6129] hover:bg-[#4a7832] transition-colors duration-100 disabled:opacity-30 disabled:cursor-not-allowed shadow-[2px_2px_0px_0px_rgba(61,97,41,0.5)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+      >
+        Submit Self-Evaluation
+      </button>
+    </div>
+  )
+}
+
+function ScoreComparison({ dimensions, selfRatings }) {
+  const withinOne = dimensions.filter((dim) => Math.abs(dim.score - (selfRatings[dim.name] || 0)) <= 1).length
+
+  return (
+    <div className="mt-6 pt-4 border-t-2 border-stone-300">
+      <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">Self-Awareness Check</p>
+      <div className="border-2 border-stone-400 bg-stone-100 p-3 space-y-2">
+        <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-3 gap-y-2 items-center">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400">Dimension</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 text-center w-12">You</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 text-center w-12">AI</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 text-center w-12">Gap</span>
+          {dimensions.map((dim) => {
+            const self = selfRatings[dim.name] || 0
+            const gap = Math.abs(dim.score - self)
+            const colors = gapColor(gap)
+            return (
+              <React.Fragment key={dim.name}>
+                <span className="text-xs font-bold text-stone-600 truncate">{dim.name}</span>
+                <span className="text-xs font-black text-stone-700 text-center w-12">{self}</span>
+                <span className="text-xs font-black text-stone-700 text-center w-12">{dim.score}</span>
+                <span className={`text-xs font-black text-center w-12 py-0.5 border ${colors.text} ${colors.bg} ${colors.border}`}>
+                  {gap === 0 ? '0' : `${gap}`}
+                </span>
+              </React.Fragment>
+            )
+          })}
+        </div>
+      </div>
+      <p className="text-sm text-stone-600 mt-3">
+        Self-awareness score: <span className="font-black">{withinOne}/{dimensions.length}</span> dimensions within 1 point of the AI rating
+      </p>
+    </div>
+  )
 }
 
 function DimensionScores({ dimensionData }) {
@@ -243,6 +341,8 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [showModelAnswer, setShowModelAnswer] = useState(false)
+  const [selfEvalRatings, setSelfEvalRatings] = useState(null)
+  const [selfEvalComplete, setSelfEvalComplete] = useState(false)
 
   function handleCategorySelect(cat) {
     setSelectedCategory(cat.id)
@@ -251,6 +351,8 @@ export default function App() {
     setFeedback(null)
     setError(null)
     setShowModelAnswer(false)
+    setSelfEvalRatings(null)
+    setSelfEvalComplete(false)
   }
 
   function handleNewScenario() {
@@ -259,6 +361,8 @@ export default function App() {
     setFeedback(null)
     setError(null)
     setShowModelAnswer(false)
+    setSelfEvalRatings(null)
+    setSelfEvalComplete(false)
   }
 
   async function handleSubmit() {
@@ -267,6 +371,8 @@ export default function App() {
     setFeedback(null)
     setError(null)
     setShowModelAnswer(false)
+    setSelfEvalRatings(null)
+    setSelfEvalComplete(false)
     try {
       const result = await getAIFeedback(
         selectedCategory,
@@ -387,24 +493,67 @@ export default function App() {
             <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-5">Feedback</h3>
             <FeedbackDisplay text={feedback} />
 
-            {/* Model Answer toggle */}
-            {scenario.modelAnswer && (
-              <div className="mt-6 pt-4 border-t-2 border-stone-300">
-                <button
-                  onClick={() => setShowModelAnswer(!showModelAnswer)}
-                  className="text-sm font-bold text-[#5B8C3E] hover:text-[#3d6129] transition-colors duration-100 flex items-center gap-2"
-                >
-                  <span className="text-base leading-none">{showModelAnswer ? '▼' : '▶'}</span>
-                  See a strong answer
-                </button>
-                {showModelAnswer && (
-                  <div className="mt-4 bg-amber-50 border-2 border-stone-300 p-5">
-                    <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">Expert Answer</p>
-                    <p className="text-stone-700 text-sm leading-relaxed whitespace-pre-line">{scenario.modelAnswer}</p>
+            {/* Self-evaluation gate + Model Answer */}
+            {scenario.modelAnswer && (() => {
+              const dimData = parseDimensionScores(feedback)
+              const hasDimensions = dimData && dimData.dimensions.length > 0
+
+              // No dimension scores parsed (fallback mode): skip gate, show toggle directly
+              if (!hasDimensions) {
+                return (
+                  <div className="mt-6 pt-4 border-t-2 border-stone-300">
+                    <button
+                      onClick={() => setShowModelAnswer(!showModelAnswer)}
+                      className="text-sm font-bold text-[#5B8C3E] hover:text-[#3d6129] transition-colors duration-100 flex items-center gap-2"
+                    >
+                      <span className="text-base leading-none">{showModelAnswer ? '▼' : '▶'}</span>
+                      See a strong answer
+                    </button>
+                    {showModelAnswer && (
+                      <div className="mt-4 bg-amber-50 border-2 border-stone-300 p-5">
+                        <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">Expert Answer</p>
+                        <p className="text-stone-700 text-sm leading-relaxed whitespace-pre-line">{scenario.modelAnswer}</p>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            )}
+                )
+              }
+
+              // Self-eval not done yet: show self-eval form
+              if (!selfEvalComplete) {
+                return (
+                  <SelfEvaluation
+                    dimensions={dimData.dimensions}
+                    onSubmit={(ratings) => {
+                      setSelfEvalRatings(ratings)
+                      setSelfEvalComplete(true)
+                    }}
+                  />
+                )
+              }
+
+              // Self-eval done: show comparison + model answer toggle
+              return (
+                <>
+                  <ScoreComparison dimensions={dimData.dimensions} selfRatings={selfEvalRatings} />
+                  <div className="mt-6 pt-4 border-t-2 border-stone-300">
+                    <button
+                      onClick={() => setShowModelAnswer(!showModelAnswer)}
+                      className="text-sm font-bold text-[#5B8C3E] hover:text-[#3d6129] transition-colors duration-100 flex items-center gap-2"
+                    >
+                      <span className="text-base leading-none">{showModelAnswer ? '▼' : '▶'}</span>
+                      See a strong answer
+                    </button>
+                    {showModelAnswer && (
+                      <div className="mt-4 bg-amber-50 border-2 border-stone-300 p-5">
+                        <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">Expert Answer</p>
+                        <p className="text-stone-700 text-sm leading-relaxed whitespace-pre-line">{scenario.modelAnswer}</p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )
+            })()}
           </div>
         )}
 

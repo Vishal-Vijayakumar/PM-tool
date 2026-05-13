@@ -1,5 +1,13 @@
 # PM Prep Tool -- Changelog
 
+## Self-Evaluation Gate -- 2026-05-13
+- Model answer is now gated behind a self-evaluation step: users must rate themselves on each dimension before the expert answer unlocks
+- Self-eval uses Minecraft-styled score blocks (1-10) for each of the 5 dimensions
+- After submitting self-ratings, a comparison view shows "You vs AI" for each dimension with color-coded gap (green within 1, amber 2-3, red 4+)
+- Self-awareness summary line: "X/5 dimensions within 1 point of the AI rating"
+- Graceful fallback: if dimension parsing fails (low-effort/gibberish responses), self-eval gate is skipped and model answer toggle shows directly
+- All state resets on new scenario, category change, or new submission
+
 ## 5-Dimension Score Display + Beta Label -- 2026-05-07
 - Evaluator prompts now output per-dimension scores in a structured DIMENSION_SCORES block
 - Frontend parses dimension scores and renders them as Minecraft-themed stat bars (color-coded green/amber/red)
