@@ -1,5 +1,14 @@
 # PM Prep Tool -- Changelog
 
+## Parser Resilience + Calibration Strip -- 2026-05-13
+- Fixed dimension score parser that was failing when the LLM omitted the END_SCORES closing marker. The DIMENSION_SCORES block was rendering as raw text and the self-eval gate was being skipped.
+- The regex now terminates on END_SCORES (if present), the first feedback section header (STRENGTHS, GAPS, etc.), or a double blank line, whichever comes first.
+- Added recognition for the SCORING CALIBRATION section header so it no longer leaks into the Interviewer Tip content. It is now silently dropped from rendered output.
+- Backward compatible: responses that still include END_SCORES continue to parse correctly.
+
+## Remove Personal Info From Footer -- 2026-05-13
+- Removed the "Built by Vishal Vijayakumar" text and LinkedIn link from the footer; replaced with a minimal divider line. The tool is shared via Reddit and LinkedIn outreach, and identifying info in the app itself was unnecessary.
+
 ## Feedback Flow Reorder + Key Concepts Checklist -- 2026-05-13
 - Restructured feedback flow so self-evaluation happens BEFORE the AI scores are revealed (prevents users from anchoring to the AI rating)
 - New order after submission: qualitative feedback (Strengths, Gaps, Interviewer Tip) -> self-evaluation -> reveal of dimension scores + comparison + Overall -> key concepts checklist -> model answer toggle

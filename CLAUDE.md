@@ -44,7 +44,7 @@ pm-prep-tool/
 3. **Tradeoff Analysis** — Given a product decision with tradeoffs, analyze and recommend
 
 ## Current Status
-**Phase 3 complete + polish pass. Minecraft UI, model answers, value prop chips, 5-dimension score display, beta label, Vercel deployment live.**
+**Phase 3 complete + polish pass. Minecraft UI, model answers, value prop chips, 5-dimension score display, self-evaluation gate, key concepts checklist, beta label, Vercel deployment live at https://pm-interview-prep-tool.vercel.app/.**
 
 ### What's been built
 - Vite + React + Tailwind CSS project with Minecraft-inspired UI (warm parchment tones, blocky panels, Press Start 2P title font, green accent)
@@ -72,7 +72,7 @@ pm-prep-tool/
 - Selecting a scenario and getting AI feedback end-to-end
 - Evaluation hints from each scenario are appended to the system prompt for more targeted feedback
 - "New scenario" button cycles through scenarios in the active category
-- Feedback parsed into styled sections (score, strengths, gaps, example, tip)
+- Feedback parsed into styled sections: qualitative (strengths, gaps, interviewer tip) shown first; dimension scores revealed after self-eval; the AI's "strong answer example" and "scoring calibration" sections are silently dropped from rendered output
 - Qualitative feedback (Strengths/Gaps/Interviewer Tip) shows immediately; dimension scores are hidden until self-evaluation is submitted
 - Self-evaluation gate blocks both scores and model answer until user self-rates on all 5 dimensions
 - Score comparison (You vs AI) with self-awareness summary + Key Concepts checklist (from scenario.evaluationHints) shown after self-eval
@@ -80,11 +80,11 @@ pm-prep-tool/
 - Category descriptions shown under the selector buttons
 - Error display if the API call fails
 - `.env` is gitignored; API key is not in the repo
-- Vercel serverless proxy ready for deployment (set `NVIDIA_API_KEY` env var in Vercel dashboard)
+- Vercel serverless proxy deployed and live at https://pm-interview-prep-tool.vercel.app/ (`NVIDIA_API_KEY` env var set in Vercel dashboard)
 
 ### What's pending
-- **Vercel deployment** -- import repo in Vercel dashboard, add `NVIDIA_API_KEY` env var, deploy
-- Improving feedback quality based on real PM feedback
+- Improving feedback quality based on real PM feedback from LinkedIn/Reddit outreach
+- Optional polish (scenario difficulty levels, share-by-URL, timer mode) -- deferred to future phases
 
 ### GitHub Repo
 https://github.com/Vishal-Vijayakumar/PM-tool
@@ -134,7 +134,7 @@ https://github.com/Vishal-Vijayakumar/PM-tool
 - When in doubt, keep it simple.
 
 ## Current Phase
-Phase 3: Minecraft UI, model answers with evaluation hints, Vercel serverless proxy ready.
+Phase 3 shipped: Minecraft UI, model answers with evaluation hints, 5-dimension score display, self-evaluation gate with score comparison and key concepts checklist, beta label, deployed to Vercel and live. Currently in feedback-gathering mode via LinkedIn/Reddit outreach.
 
 ## Future Phases (not now)
 - Phase 4: Improve feedback quality based on PM feedback from outreach
